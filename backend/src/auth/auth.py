@@ -79,7 +79,7 @@ def get_token_auth_header():
     return true otherwise
 '''
 def check_permissions(permission, payload):
-    if permission not in payload:
+    if 'permission' not in payload:
         raise AuthError({
             'code': 'permissions_missing',
             'description' : 'Permissions are expected'
