@@ -108,7 +108,7 @@ def check_permissions(permission, payload):
 '''
 def verify_decode_jwt(token):
     # Get the JWKs json from auth0
-    json_url = urlopen(f'https://{AUTH0_DOMAIN}/.well-kown/jwks.json')
+    json_url = urlopen(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json')
 
     # Read the json file
     jwks = json.loads(json_url.read())
