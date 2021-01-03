@@ -87,9 +87,9 @@ def check_permissions(permission, payload):
 
     if permission not in payload['permissions']:
         raise AuthError({
-            'code': 'Forbidden_access',
+            'code': 'Unauthorized_access',
             'description': 'Access denied'
-        }, 403)
+        }, 401)
 
     return True
 
