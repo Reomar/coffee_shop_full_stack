@@ -52,8 +52,18 @@ def fetch_drinks():
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks-detail', methods=["GET"])
+@requires_auth('get:drinks-detail')
+def get_drinks_detail(jwt):
 
+    drinks = Drink.query.all()
 
+    drinks_list = [drink.long() for drink in drinks]
+
+    return jsonify({
+        "success": True,
+        "drinks": drinks_list
+    })
 '''
 @TODO implement endpoint
     POST /drinks
@@ -65,7 +75,7 @@ def fetch_drinks():
 '''
 @app.route('/drinks', methods=['POST'])
 @requires_auth('post:drinks')
-def post_drink():
+def post_drink(jwt):
     req = request.get_json()
 
     try:
