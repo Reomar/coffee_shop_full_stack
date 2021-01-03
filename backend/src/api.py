@@ -1,3 +1,4 @@
+from logging import error
 import os
 from flask import Flask, request, jsonify, abort
 from sqlalchemy import exc
@@ -18,7 +19,9 @@ CORS(app)
 '''
 # db_drop_and_create_all()
 
-## ROUTES
+##---------------------------------
+##  ROUTES
+##---------------------------------
 '''
 @TODO implement endpoint
     GET /drinks
@@ -27,6 +30,18 @@ CORS(app)
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks', methods=['GET'])
+def fetch_drinks():
+
+    drinks = Drink.query.all()
+
+    drinks_list = [drink.short() for drink in drinks]
+
+    return jsonify({
+        "success": True ,
+        "drinks": drinks_list
+    })
+
 
 
 '''
@@ -48,6 +63,34 @@ CORS(app)
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks', methods=['POST'])
+@requires_auth('post:drinks')
+def post_drink():
+    req = request.get_json()
+
+    try:
+        new_name = req['title']
+        new_recipe = req['recipe']
+
+        # Check wether the recipe is dict and convert it to a list
+        if type(new_recipe) == dict:
+            new_recipe = [new_recipe]
+
+        # Change the new_recipe to string
+        new_recipe_string = json.dumps(new_recipe)
+
+        new_drink = Drink(title=new_name , recipe = new_recipe_string )
+        new_drink.insert()
+
+    except Exception as e:
+        print(e)
+        abort(422)
+
+    return jsonify({
+        "success": True,
+        "drinks": [new_drink.long()]
+    })
+
 
 
 '''
