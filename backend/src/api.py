@@ -114,6 +114,33 @@ def post_drink(jwt):
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<id>', methods=['PATCH'])
+@requires_auth('patch:drinks')
+def edit_drinks(jwt, id):
+    req = request.get_json()
+
+    drink = Drink.query.get(id)
+
+    if not drink:
+        abort(404)
+
+    try:
+        if 'title' in req:
+            drink.title = req['title']
+
+        if 'recipe' in req:
+            drink.recipe = json.dumps(req['recipe'])
+
+        drink.update()
+
+    except Exception as e:
+        print(e)
+        abort(400)
+
+    return jsonify({
+        "success": True,
+         "drinks": [drink.long()]
+    })
 
 
 '''
@@ -135,7 +162,7 @@ Example error handling for unprocessable entity
 @app.errorhandler(422)
 def unprocessable(error):
     return jsonify({
-                    "success": False, 
+                    "success": False,
                     "error": 422,
                     "message": "unprocessable"
                     }), 422
